@@ -248,6 +248,17 @@ export function buildTransactions(count = 40): TransactionRow[] {
   return rows;
 }
 
+/** Edge tıklaması için iki adres arasındaki transfer önizlemesi (deterministik mock). */
+export function getEdgeTransfer(source: string, target: string) {
+  const pool = [
+    { amount: "100.3K", symbol: "LUM", variant: "sage" },
+    { amount: "90.3K", symbol: "MUL", variant: "ink" },
+    { amount: "23.5K", symbol: "BUD", variant: "sage" },
+    { amount: "107", symbol: "BUDL", variant: "tan" },
+  ] as const;
+  return pool[hashCode(source + target) % pool.length];
+}
+
 function hashCode(s: string): number {
   let h = 0;
   for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;

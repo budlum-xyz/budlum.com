@@ -15,12 +15,14 @@ export function GraphScene({
   selectedId,
   showSharePct = false,
   onNodeClick,
+  onEdgeClick,
 }: {
   nodes: GraphNode[];
   edges: GraphEdge[];
   selectedId?: string;
   showSharePct?: boolean;
   onNodeClick?: (node: GraphNode) => void;
+  onEdgeClick?: (edge: GraphEdge, event: React.MouseEvent) => void;
 }) {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const byId = new Map(nodes.map((n) => [n.id, n]));
@@ -37,16 +39,36 @@ export function GraphScene({
           selectedId === e.source || selectedId === e.target;
         const dimmed = (hoveredId || null) !== null && !active;
         return (
-          <line
-            key={e.id}
-            x1={s.x}
-            y1={s.y}
-            x2={t.x}
-            y2={t.y}
-            stroke={e.relation === "distribution" ? "#060705" : "#98ae89"}
-            strokeWidth={active ? 1.6 : 1}
-            opacity={dimmed ? 0.25 : 1}
-          />
+          <g key={e.id}>
+            <line
+              x1={s.x}
+              y1={s.y}
+              x2={t.x}
+              y2={t.y}
+              stroke={e.relation === "distribution" ? "#060705" : "#98ae89"}
+              strokeWidth={active ? 1.6 : 1}
+              opacity={dimmed ? 0.25 : 1}
+            />
+            {/* Görünmez geniş hitbox — 1px çizgiye tıklamayı kolaylaştırır */}
+            {onEdgeClick ? (
+              <line
+                x1={s.x}
+                y1={s.y}
+                x2={t.x}
+                y2={t.y}
+                stroke="transparent"
+                strokeWidth={16}
+                pointerEvents="stroke"
+                className="cursor-pointer"
+                role="button"
+                aria-label={`${e.source} ile ${e.target} arasındaki transfer`}
+                onClick={(ev) => {
+                  ev.stopPropagation();
+                  onEdgeClick(e, ev);
+                }}
+              />
+            ) : null}
+          </g>
         );
       })}
 
