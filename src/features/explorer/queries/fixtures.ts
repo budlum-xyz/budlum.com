@@ -257,3 +257,126 @@ export const TOKENS: Record<string, { id: string; symbol: string; name: string }
   lum: { id: "lum", symbol: "LUM", name: "budlum" },
   bud: { id: "bud", symbol: "BUD", name: "bud" },
 };
+
+/* ------------------------- Faz 1b: kullanıcının kendi hesapları ------------------------- */
+
+export interface OwnAccount {
+  id: string;
+  name: string;
+  address: string;
+  coordinate: { x: number; y: number };
+  avatarUrl?: string; // yoksa düz sage kare (anonim kuralı)
+  summary: WalletSummary;
+}
+
+/** Figma mock'undaki anahtar/seed değerleri — sadece gösterim, gerçek değil. */
+export const MOCK_PRIVATE_KEY =
+  "64898921wyesbguxovyubzuyvzbwyw8997nwh7w92jw8jw2190w12zwbh2199wz7k91zjwzb2wy912yhz1872zeez27h";
+export const MOCK_SEED_PHRASE =
+  "course digital budlum heart bee book button melody sponge paw frozen cheese";
+
+function ownSummary(
+  address: string,
+  name: string,
+  avatarUrl?: string,
+  coordinate: { x: number; y: number } = { x: 1233, y: -1234 },
+): WalletSummary {
+  // Figma "You" portföy kartı verisi: 2 tokens (0.81M LUM), 2 NFT, 200K $BUD, tek transfer
+  return {
+    address,
+    displayName: name,
+    avatarUrl,
+    coordinate,
+    primaryBalance: { amount: "200K", symbol: "BUD", variant: "sage" },
+    tokenCount: 2,
+    tokenTotal: { amount: "0.81M", symbol: "LUM" },
+    nftCount: 2,
+    recentTransfers: [
+      {
+        id: "t1",
+        amount: "100.3K",
+        symbol: "BUD",
+        variant: "sage",
+        counterparty: ADDRESSES.beyza,
+      },
+    ],
+    recentApps: [
+      { id: "a1", name: "Lum", category: "Defi", icon: "lum" },
+      { id: "a2", name: "Bud", category: "Socialfi", icon: "bud" },
+    ],
+  };
+}
+
+export const OWN_ACCOUNTS: OwnAccount[] = [
+  {
+    id: "you",
+    name: "You",
+    address: "0543a86L07Gp4rT8bN2mV6cX1sDptA90pA",
+    coordinate: { x: 1233, y: -1234 },
+    summary: ownSummary("0543a86L07Gp4rT8bN2mV6cX1sDptA90pA", "You"),
+  },
+  {
+    id: "eurymede",
+    name: "Eurymede",
+    address: "0983z65Pm4Kj8nQ2wR6tY1uIojfB17hS",
+    coordinate: { x: -210, y: 540 },
+    avatarUrl: "/assets/avatars/avatar-4.png",
+    summary: ownSummary(
+      "0983z65Pm4Kj8nQ2wR6tY1uIojfB17hS",
+      "Eurymede",
+      "/assets/avatars/avatar-4.png",
+    ),
+  },
+  {
+    id: "ayaz",
+    name: "Ayaz",
+    address: "0763a86Ly2Wd5sF9gH3jK7lZ4xCptA20ps",
+    coordinate: { x: 98, y: -77 },
+    avatarUrl: "/assets/avatars/avatar-3.png",
+    summary: ownSummary(
+      "0763a86Ly2Wd5sF9gH3jK7lZ4xCptA20ps",
+      "Ayaz",
+      "/assets/avatars/avatar-3.png",
+    ),
+  },
+  {
+    id: "bugra",
+    name: "Buğra",
+    address: "02s3a86L1t5Vb8nM4kJ9hG2fDsYtA90pA",
+    coordinate: { x: 4040, y: 12 },
+    avatarUrl: "/assets/avatars/avatar-5.png",
+    summary: ownSummary(
+      "02s3a86L1t5Vb8nM4kJ9hG2fDsYtA90pA",
+      "Buğra",
+      "/assets/avatars/avatar-5.png",
+    ),
+  },
+  {
+    id: "cheesecake",
+    name: "Cheesecake",
+    address: "0g43GH9kP6mB3vC8xZ5nQ1wEsJh7325Y",
+    coordinate: { x: -1500, y: -320 },
+    avatarUrl: "/assets/avatars/avatar-1.png",
+    summary: ownSummary(
+      "0g43GH9kP6mB3vC8xZ5nQ1wEsJh7325Y",
+      "Cheesecake",
+      "/assets/avatars/avatar-1.png",
+    ),
+  },
+  {
+    id: "avocado",
+    name: "Avocado",
+    address: "0mv61hi0v9Rt2yU7iO4pL6kJsbe040tR",
+    coordinate: { x: 730, y: 2205 },
+    avatarUrl: "/assets/avatars/avatar-6.png",
+    summary: ownSummary(
+      "0mv61hi0v9Rt2yU7iO4pL6kJsbe040tR",
+      "Avocado",
+      "/assets/avatars/avatar-6.png",
+    ),
+  },
+];
+
+export function getOwnAccount(id: string): OwnAccount | undefined {
+  return OWN_ACCOUNTS.find((a) => a.id === id);
+}
