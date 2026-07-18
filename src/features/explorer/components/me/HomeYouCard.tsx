@@ -9,20 +9,20 @@ import { formatCoordinate, shortAddress } from "../../utils/format";
 export function HomeYouCard() {
   const you = OWN_ACCOUNTS[0];
   return (
-    <div className="absolute right-[14px] top-[110px] z-10 flex w-[528px] items-start gap-6 bg-canvas p-6">
+    <div className="absolute right-[14px] top-[110px] z-10 flex w-[480px] items-start gap-4 bg-canvas p-4">
       <Link href="/me" aria-label="cüzdanım">
-        <span aria-hidden className="block size-[88px] bg-sage transition-opacity hover:opacity-80" />
+        <span aria-hidden className="block size-[72px] bg-sage transition-opacity hover:opacity-80" />
       </Link>
-      <div className="flex flex-col gap-1 pt-1">
-        <Link href="/me" className="w-fit text-xl leading-tight underline underline-offset-4 hover:opacity-70">
+      <div className="flex flex-col gap-0.5 pt-0.5">
+        <Link href="/me" className="w-fit text-lg leading-tight underline underline-offset-4 hover:opacity-70">
           {you.name}
         </Link>
-        <span className="font-data text-xl leading-tight" title={you.address}>
+        <span className="font-data text-lg leading-tight" title={you.address}>
           {shortAddress(you.address)}
         </span>
         <Link
           href="/me"
-          className="w-fit text-xl leading-tight text-sage-dark underline underline-offset-4 hover:opacity-70"
+          className="w-fit text-lg leading-tight text-sage-dark underline underline-offset-4 hover:opacity-70"
         >
           {formatCoordinate(you.coordinate)}
         </Link>
@@ -32,7 +32,7 @@ export function HomeYouCard() {
         aria-label="hesap değiştir"
         className="ml-auto text-sage transition-opacity hover:opacity-70"
       >
-        <GearOutline className="size-7" />
+        <GearOutline className="size-6" />
       </Link>
     </div>
   );

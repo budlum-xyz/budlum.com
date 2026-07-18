@@ -1,39 +1,79 @@
 @import "tailwindcss";
 
-@theme {
-  /* Budlum renk tokenları — Figma'dan birebir (spec §10) */
-  --color-canvas: #fbfcfa;
-  --color-ink: #060705;
-  --color-sage: #98ae89;
-  --color-sage-dark: #6e8560; /* küçük metinde kontrast varyantı */
-  --color-surface: #ffffff;
-  --color-border: #333333;
-  --color-border-soft: #e6e6e6;
-  --color-muted: #bdbdbd;
-  --color-token-tan: #ae9a89;
-  --color-token-purple: #ae89aa;
-  --color-token-rose: #ae898a;
+/* ---- Tema değişkenleri: :root = beyaz (Faz 1), [data-theme=dark] = koyu (spec §13) ---- */
+:root {
+  --canvas: #fbfcfa;
+  --ink: #060705;
+  --surface: #ffffff;
+  --border-strong: #333333;
+  --border-subtle: #e6e6e6;
+  --sage: #98ae89;
+  --sage-text: #6e8560; /* açık zeminde küçük metin kontrast varyantı */
+  --muted: #bdbdbd;
+  --token-tan: #ae9a89;
+  --token-purple: #ae89aa;
+  --token-rose: #ae898a;
+  --pattern-image: url("/assets/brand/pattern-bg.png");
+  --inspector-width: clamp(360px, 23.33vw, 448px);
+}
+
+[data-theme="dark"] {
+  --canvas: #060705;
+  --ink: #fbfcfa;
+  --surface: #0b0d0a;
+  --border-subtle: #191919;
+  --sage-text: #98ae89; /* koyu zeminde sage doğrudan okunur */
+  --pattern-image: url("/assets/brand/pattern-bg-dark.png");
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-ink: var(--ink);
+  --color-surface: var(--surface);
+  --color-border: var(--border-strong);
+  --color-border-soft: var(--border-subtle);
+  --color-sage: var(--sage);
+  --color-sage-dark: var(--sage-text);
+  --color-muted: var(--muted);
+  --color-token-tan: var(--token-tan);
+  --color-token-purple: var(--token-purple);
+  --color-token-rose: var(--token-rose);
 
   /* Tipografi rolleri — Dosis (UI), Mako (data) */
   --font-ui: var(--font-dosis), "DejaVu Sans", sans-serif;
   --font-data: var(--font-mako), "DejaVu Sans", sans-serif;
 
-  /* Parıltı/seçim ışıması yalnız arama, send ve seçili öğelerde */
+  /* Işıma yalnız arama, send, seçili parıltı ve node'larda (spec §13) */
   --shadow-search: 0 0 8px #98ae89;
-}
-
-:root {
-  /* 3840 Figma referansı → 1920 CSS tabanı (değerler ÷2) */
-  --inspector-width: clamp(360px, 23.33vw, 448px);
+  --shadow-glow-node: 0 0 60px rgb(152 174 137 / 0.5), 0 0 120px #98ae89;
 }
 
 body {
-  background-color: var(--color-canvas);
-  background-image: url("/assets/brand/pattern-bg.png");
+  background-color: var(--canvas);
+  background-image: var(--pattern-image);
   background-size: 1920px 1080px;
   background-repeat: repeat;
-  color: var(--color-ink);
+  color: var(--ink);
   font-family: var(--font-ui);
+}
+
+/* Klavye odağı — koyu/açık her zeminde görünür halka (spec §13 focus-ring) */
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--canvas), 0 0 0 4px var(--sage);
+}
+
+/* Piksel gözler: merkeze yakın AMA arka plan karo gridine (30px) tam oturan konum.
+   Desen viewport (0,0)'dan döşendiği için 30'un katı her konum karo sınırıdır. */
+.eyes-grid {
+  left: calc(50% - 210px);
+  top: calc(50% - 120px);
+}
+@supports (left: round(nearest, 1px, 2px)) {
+  .eyes-grid {
+    left: round(nearest, calc(50% - 210px), 30px);
+    top: round(nearest, calc(50% - 120px), 30px);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

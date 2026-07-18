@@ -15,8 +15,9 @@ export default function Home() {
       <main className="absolute inset-0" aria-label="harita">
         <HomeYouCard />
 
-        {/* Piksel gözler — haritanın merkez maskotu */}
-        <div className="absolute left-1/2 top-[39%] flex -translate-x-1/2 gap-[120px] text-ink">
+        {/* Piksel gözler — hücreler arka plan desen karolarını (30px grid) birebir boyar;
+            .eyes-grid konumu merkeze en yakın karo sınırına yuvarlar. */}
+        <div className="eyes-grid absolute flex gap-[120px] text-ink">
           <PixelEye className="size-[150px]" />
           <PixelEye className="size-[150px]" />
         </div>
