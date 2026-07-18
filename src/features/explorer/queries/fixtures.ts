@@ -380,3 +380,104 @@ export const OWN_ACCOUNTS: OwnAccount[] = [
 export function getOwnAccount(id: string): OwnAccount | undefined {
   return OWN_ACCOUNTS.find((a) => a.id === id);
 }
+
+/** Token drawer satırları — Figma "tokens yazısına tıkladı" (2580:197 / 2614:402). */
+export interface TokenHoldingRow {
+  id: string;
+  amount: string;
+  symbol: string;
+  fiat: string;
+  variant: "sage" | "ink" | "purple" | "tan" | "rose";
+}
+
+export const OWN_TOKEN_HOLDINGS: TokenHoldingRow[] = [
+  { id: "h1", amount: "200K", symbol: "BUD", fiat: "20K $", variant: "sage" },
+  { id: "h2", amount: "20M", symbol: "MUL", fiat: "20K $", variant: "purple" },
+  ...Array.from({ length: 6 }, (_, i) => ({
+    id: `h${i + 3}`,
+    amount: "200K",
+    symbol: "LUM",
+    fiat: "20K $",
+    variant: "sage" as const,
+  })),
+];
+
+/** NFT drawer kartları — Figma "nft yazısına tıkladı" (3317:788); metinler mock. */
+export interface NftHoldingRow {
+  id: string;
+  name: string;
+  caption: string;
+}
+
+export const OWN_NFTS: NftHoldingRow[] = [
+  { id: "n1", name: "NFT", caption: "Her zaman daima her zam.." },
+  { id: "n2", name: "NFT2", caption: "Her zaman daima her zam.." },
+];
+
+/* ------------------------- Market ve Top ranks (Figma 2413:2181 / 2277:28) ------------------------- */
+
+export const MARKET_CATEGORIES = [
+  "All",
+  "DeFi",
+  "DeArt",
+  "DeSci",
+  "SocialFi",
+  "GameFi",
+  "AI",
+  "RWA",
+] as const;
+
+export interface MarketRow {
+  id: string;
+  token: string;
+  verified: boolean;
+  symbol: string;
+  price: string;
+  marketCap: string;
+  holders: string;
+  lastWeek: string;
+  lastYear: string;
+  address: string;
+}
+
+export const MARKET_ROWS: MarketRow[] = [
+  {
+    id: "m1",
+    token: "budlum",
+    verified: true,
+    symbol: "LUM",
+    price: "0.003$",
+    marketCap: "300,000.23$",
+    holders: "230000",
+    lastWeek: "%2.5",
+    lastYear: "%12.5",
+    address: "Hkdsde8hdAq3Rt7Yw2Nb5Km9Jp790Ec",
+  },
+  ...Array.from({ length: 12 }, (_, i) => ({
+    id: `m${i + 2}`,
+    token: "gurdun",
+    verified: false,
+    symbol: "GRD",
+    price: "0.003$",
+    marketCap: "300,000.23$",
+    holders: "230000",
+    lastWeek: "%2.5",
+    lastYear: "%12.5",
+    address: "Hkdsde8hdAq3Rt7Yw2Nb5Km9Jp790Ec",
+  })),
+];
+
+/** Revaştakiler / Top ranks — numaralı uygulama sıralaması (Figma 2277:28). */
+export interface TrendingRow {
+  rank: number;
+  name: string;
+  category: AppCategory;
+  icon: "lum" | "fiction" | "bud";
+}
+
+export const TRENDING_ROWS: TrendingRow[] = Array.from({ length: 10 }, (_, i) => ({
+  rank: i + 1,
+  name: i === 0 ? "Bud" : i === 1 ? "Lum" : i === 2 ? "Lubo vs Fiction" : "Bud",
+  category: (i === 1 ? "Defi" : i === 2 ? "Gamefi" : "Socialfi") as AppCategory,
+  icon: (i === 1 ? "lum" : i === 2 ? "fiction" : "bud") as "lum" | "fiction" | "bud",
+}));

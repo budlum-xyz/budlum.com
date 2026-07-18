@@ -2,23 +2,32 @@ import Image from "next/image";
 import Link from "next/link";
 import { COPY } from "../../copy";
 import type { OwnAccount } from "../../queries/fixtures";
-import { MOCK_PRIVATE_KEY, MOCK_SEED_PHRASE } from "../../queries/fixtures";
+import {
+  MOCK_PRIVATE_KEY,
+  MOCK_SEED_PHRASE,
+  OWN_NFTS,
+  OWN_TOKEN_HOLDINGS,
+} from "../../queries/fixtures";
 import { formatCoordinate, shortAddress } from "../../utils/format";
-import { TokenIcon, TransferArrow } from "../glyphs";
+import { FlowerMark, Sparkle, TokenIcon, TransferArrow } from "../glyphs";
 import { LogoutButton } from "./LogoutButton";
 import { SecretField } from "./SecretField";
 
+export type MePanelState = "portfolio" | "keys" | "tokens" | "nfts";
+
 /**
- * Kendi cüzdan paneli — iki durum (Figma "kullanıcı kendi cüzdanını açtı"):
+ * Kendi cüzdan paneli — dört durum (Figma "kullanıcı kendi cüzdanını açtı" + drawer'lar):
  * - portfolio: dişli ikon + varlıklar + son transfer + transferleri aç
  * - keys: Özel anahtar / Tohum tümceciği (göz toggle) + iki aşamalı çıkış
+ * - tokens: token listesi + "Lum'da aç" (spec §10)
+ * - nfts: NFT kartları + "Bud'da aç" (spec §10)
  */
 export function MePanel({
   account,
   panel,
 }: {
   account: OwnAccount;
-  panel: "portfolio" | "keys";
+  panel: MePanelState;
 }) {
   const s = account.summary;
 
@@ -55,18 +64,28 @@ export function MePanel({
         </Link>
       </div>
 
-      {panel === "portfolio" ? (
+      {panel === "tokens" ? (
+        <TokensDrawer accountId={account.id} />
+      ) : panel === "nfts" ? (
+        <NftsDrawer accountId={account.id} />
+      ) : panel === "portfolio" ? (
         <>
-          {/* Varlıklar */}
+          {/* Varlıklar — sayılar drawer'lara link (Figma'da açık davranış) */}
           <div className="flex items-center gap-4">
             <TransferArrow className="size-6 text-sage" />
             <div className="flex flex-col gap-1 font-data text-xl">
-              <span className="w-fit underline underline-offset-4">
+              <Link
+                href={`/me?account=${account.id}&panel=tokens`}
+                className="w-fit underline underline-offset-4 hover:opacity-70"
+              >
                 {COPY.inspector.tokens(s.tokenCount, s.tokenTotal.amount, s.tokenTotal.symbol)}
-              </span>
-              <span className="w-fit underline underline-offset-4">
+              </Link>
+              <Link
+                href={`/me?account=${account.id}&panel=nfts`}
+                className="w-fit underline underline-offset-4 hover:opacity-70"
+              >
                 {COPY.inspector.nft(s.nftCount)}
-              </span>
+              </Link>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -126,6 +145,96 @@ export function MePanel({
         </>
       )}
     </div>
+  );
+}
+
+/** Token listesi drawer'ı — Figma 2580:197: satırlar + fiat + "Lum'da aç" + alt legend. */
+function TokensDrawer({ accountId }: { accountId: string }) {
+  return (
+    <div className="flex flex-col gap-4">
+      <ul className="flex max-h-[420px] flex-col gap-2 overflow-y-auto pr-1">
+        {OWN_TOKEN_HOLDINGS.map((t) => (
+          <li key={t.id} className="flex items-center gap-3">
+            <TokenIcon variant={t.variant} className="size-8" />
+            <span className="whitespace-nowrap font-data text-lg">
+              {t.amount} ${t.symbol}
+            </span>
+            <span className="ml-auto font-data text-base text-muted">{t.fiat}</span>
+          </li>
+        ))}
+      </ul>
+      {/* TODO: Lum uygulaması yayınlanınca gerçek href + rel="noopener noreferrer" */}
+      <button
+        type="button"
+        className="w-fit self-center border border-border px-5 py-1 text-base hover:bg-surface"
+      >
+        {COPY.me.openInLum}
+      </button>
+      <DrawerLegend />
+      <BackToWallet accountId={accountId} />
+    </div>
+  );
+}
+
+/** NFT galerisi drawer'ı — Figma 3317:788: sage placeholder kartlar + "Bud'da aç". */
+function NftsDrawer({ accountId }: { accountId: string }) {
+  return (
+    <div className="flex flex-col gap-4">
+      <ul className="grid grid-cols-2 gap-4">
+        {OWN_NFTS.map((n) => (
+          <li key={n.id} className="flex flex-col gap-2">
+            {/* Deterministic placeholder — görsel yoksa düz sage yüzey (spec §10) */}
+            <span aria-hidden className="aspect-square w-full bg-sage" />
+            <span className="text-base leading-tight">{n.name}</span>
+            <span className="truncate text-sm text-muted" title={n.caption}>
+              {n.caption}
+            </span>
+          </li>
+        ))}
+      </ul>
+      {/* TODO: Bud uygulaması yayınlanınca gerçek href + rel="noopener noreferrer" */}
+      <button
+        type="button"
+        className="w-fit self-center border border-border px-5 py-1 text-base hover:bg-surface"
+      >
+        {COPY.me.openInBud}
+      </button>
+      <DrawerLegend />
+      <BackToWallet accountId={accountId} />
+    </div>
+  );
+}
+
+/** Drawer alt legend'ı — Bud / Lum / Dao ikonları (Figma 2580:197 altı). */
+function DrawerLegend() {
+  return (
+    <div className="mt-2 flex items-end justify-center gap-6">
+      {(
+        [
+          ["Bud", <FlowerMark key="b" className="size-5 text-sage" />],
+          ["Lum", <Sparkle key="l" className="size-5 text-ink" />],
+          ["Dao", <FlowerMark key="d" className="size-5 text-ink" />],
+        ] as const
+      ).map(([label, icon]) => (
+        <span key={label} className="flex flex-col items-center gap-1">
+          <span className="flex size-9 items-center justify-center border border-border-soft bg-surface">
+            {icon}
+          </span>
+          <span className="text-sm">{label}</span>
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function BackToWallet({ accountId }: { accountId: string }) {
+  return (
+    <Link
+      href={`/me?account=${accountId}`}
+      className="w-fit text-base text-sage-dark underline underline-offset-4 hover:opacity-70"
+    >
+      {COPY.me.backToWallet}
+    </Link>
   );
 }
 

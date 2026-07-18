@@ -1,15 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { COPY } from "../../copy";
+
+/** Reveal sonrası otomatik gizleme süresi (spec §11: 30 sn). */
+const AUTO_HIDE_MS = 30_000;
 
 /**
  * Gizli alan — Figma "Özel anahtar" / "Tohum tümceciği" kutuları.
- * Değer gizliyken "göstermek için göze tıklayınız" yazar; alt kenar ortasındaki
- * göz/lens toggle'ı değeri gösterir-gizler.
+ * Değer gizliyken "göstermek için göze tıklayınız" yazar; göz toggle'ı gösterir.
+ * Güvenlik (spec §11): 30 sn sonra ve sekme arka plana geçince otomatik gizlenir;
+ * secret yalnız bu bileşenin state'inde yaşar — storage/network/log'a girmez.
  */
 export function SecretField({ label, value }: { label: string; value: string }) {
   const [revealed, setRevealed] = useState(false);
+
+  useEffect(() => {
+    if (!revealed) return;
+    const timer = setTimeout(() => setRevealed(false), AUTO_HIDE_MS);
+    const onVisibility = () => {
+      if (document.hidden) setRevealed(false);
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [revealed]);
 
   return (
     <div className="flex flex-col gap-2">

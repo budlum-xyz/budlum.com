@@ -55,6 +55,8 @@ export const COPY = {
     walletVerified: "Cüzdan doğrulandı",
   },
   me: {
+    openInLum: "Lum'da aç",
+    openInBud: "Bud'da aç",
     privateKey: "Özel anahtar",
     seedPhrase: "Tohum tümceciği",
     revealHint: "göstermek için göze tıklayınız",
