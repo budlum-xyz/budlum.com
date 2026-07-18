@@ -1,34 +1,39 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { Sparkle } from "./glyphs";
 
 const STORAGE_KEY = "budlum-theme";
+const EVENT = "budlum-theme-change";
+
+function subscribe(onChange: () => void) {
+  window.addEventListener(EVENT, onChange);
+  return () => window.removeEventListener(EVENT, onChange);
+}
 
 /**
  * Sağ üst yıldız — beyaz↔koyu tema geçişi (spec'in açık ürün kararı, kullanıcı onayladı).
- * Tercih localStorage'da; FOUC layout.tsx'teki inline script ile önlenir.
+ * Kaynak-of-truth <html data-theme>; tercih localStorage'da, FOUC layout inline script'iyle önlenir.
  */
 export function ThemeToggle() {
-  const [dark, setDark] = useState(false);
-
-  useEffect(() => {
-    setDark(document.documentElement.dataset.theme === "dark");
-  }, []);
+  const dark = useSyncExternalStore(
+    subscribe,
+    () => document.documentElement.dataset.theme === "dark",
+    () => false,
+  );
 
   function toggle() {
-    const next = !dark;
-    setDark(next);
-    if (next) {
-      document.documentElement.dataset.theme = "dark";
-    } else {
+    if (dark) {
       delete document.documentElement.dataset.theme;
+    } else {
+      document.documentElement.dataset.theme = "dark";
     }
     try {
-      localStorage.setItem(STORAGE_KEY, next ? "dark" : "light");
+      localStorage.setItem(STORAGE_KEY, dark ? "light" : "dark");
     } catch {
       /* gizli modda sessizce geç */
     }
+    window.dispatchEvent(new Event(EVENT));
   }
 
   return (

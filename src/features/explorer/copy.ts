@@ -37,6 +37,23 @@ export const COPY = {
     error: "bir şeyler ters gitti",
     retry: "tekrar dene",
   },
+  wallet: {
+    haveWallet: "zaten bir cüzdanım var",
+    securityTitle: "tohum tümceciğin tek kurtarma anahtarındır",
+    securityBody:
+      "Kaybedersen cüzdanına bir daha erişemezsin; kimseyle paylaşma, ekran görüntüsü alma. Budlum bu kelimeleri asla senden istemez ve hiçbir sunucuya göndermez.",
+    securityAck: "Anladım, kelimeleri güvenle kaydedeceğim",
+    seedTitle: "Tohum tümceciği",
+    noted: "Not aldım ilerle",
+    verifyTitle: "kelimeleri doğrula",
+    verifyHint: (nums: string) => `${nums}. kelimeleri sırasıyla yaz`,
+    verifyError: "kelimeler eşleşmedi, tekrar dene",
+    done: "Tamamdır",
+    login: "Giriş yap",
+    seedLengthError: "Tohum tümceciği 12, 18 veya 24 kelime olmalı",
+    keyFormatError: "Anahtar formatı doğrulanamadı",
+    walletVerified: "Cüzdan doğrulandı",
+  },
   me: {
     privateKey: "Özel anahtar",
     seedPhrase: "Tohum tümceciği",

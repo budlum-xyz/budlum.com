@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { COPY } from "../copy";
+import { BudlumLogo } from "./BudlumLogo";
 import { ThemeToggle } from "./ThemeToggle";
 import { UniversalSearch } from "./UniversalSearch";
 
@@ -9,15 +9,8 @@ export function BrandHeader({ initialQuery }: { initialQuery?: string }) {
   return (
     <header className="pointer-events-none absolute inset-x-0 top-0 z-20 flex flex-col items-center gap-[18px] pt-[22px]">
       <ThemeToggle />
-      <Link href="/" className="pointer-events-auto" aria-label={COPY.brand}>
-        <Image
-          src="/assets/brand/budlum-logo.svg"
-          alt={COPY.brand}
-          width={128}
-          height={29}
-          priority
-          unoptimized
-        />
+      <Link href="/" className="pointer-events-auto text-ink" aria-label={COPY.brand}>
+        <BudlumLogo className="h-[29px] w-[128px]" />
       </Link>
       <div className="pointer-events-auto">
         <UniversalSearch initialQuery={initialQuery} />

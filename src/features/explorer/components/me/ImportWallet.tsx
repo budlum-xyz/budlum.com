@@ -16,7 +16,13 @@ export function ImportWallet() {
   const [seed, setSeed] = useState("");
   const [coord, setCoord] = useState("x10000 y435");
 
-  const canContinue = privateKey.trim().length > 0 || seed.trim().length > 0;
+  // Validation matrisi (koyu spec §7): seed 12/18/24 kelime; anahtar asgari uzunluk
+  const seedWords = seed.trim().split(/\s+/).filter(Boolean);
+  const seedFilled = seedWords.length > 0;
+  const seedValid = [12, 18, 24].includes(seedWords.length);
+  const keyFilled = privateKey.trim().length > 0;
+  const keyValid = privateKey.trim().length >= 32;
+  const canContinue = (keyFilled && keyValid) || (seedFilled && seedValid);
   const coordValid = /^x-?\d+\s+y-?\d+$/.test(coord.trim());
 
   if (step === "credentials") {
@@ -36,8 +42,15 @@ export function ImportWallet() {
             onChange={(e) => setPrivateKey(e.target.value)}
             placeholder={COPY.me.importPlaceholder}
             rows={3}
+            autoComplete="off"
+            spellCheck={false}
             className="resize-none border border-border bg-surface p-3 font-data text-sm outline-none placeholder:text-muted focus:border-sage"
           />
+          {keyFilled && !keyValid ? (
+            <span role="alert" className="text-sm text-token-rose">
+              {COPY.wallet.keyFormatError}
+            </span>
+          ) : null}
         </label>
 
         <span className="text-center text-base text-sage-dark">{COPY.me.or}</span>
@@ -49,8 +62,15 @@ export function ImportWallet() {
             onChange={(e) => setSeed(e.target.value)}
             placeholder={COPY.me.importPlaceholder}
             rows={3}
+            autoComplete="off"
+            spellCheck={false}
             className="resize-none border border-border bg-surface p-3 font-data text-sm outline-none placeholder:text-muted focus:border-sage"
           />
+          {seedFilled && !seedValid ? (
+            <span role="alert" className="text-sm text-token-rose">
+              {COPY.wallet.seedLengthError}
+            </span>
+          ) : null}
         </label>
 
         <button
