@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme {
+  /* Budlum renk tokenları — Figma'dan birebir (spec §10) */
+  --color-canvas: #fbfcfa;
+  --color-ink: #060705;
+  --color-sage: #98ae89;
+  --color-sage-dark: #6e8560; /* küçük metinde kontrast varyantı */
+  --color-surface: #ffffff;
+  --color-border: #333333;
+  --color-border-soft: #e6e6e6;
+  --color-muted: #bdbdbd;
+  --color-token-tan: #ae9a89;
+  --color-token-purple: #ae89aa;
+  --color-token-rose: #ae898a;
+
+  /* Tipografi rolleri — Dosis (UI), Mako (data) */
+  --font-ui: var(--font-dosis), "DejaVu Sans", sans-serif;
+  --font-data: var(--font-mako), "DejaVu Sans", sans-serif;
+
+  /* Parıltı/seçim ışıması yalnız arama, send ve seçili öğelerde */
+  --shadow-search: 0 0 8px #98ae89;
+}
+
+:root {
+  /* 3840 Figma referansı → 1920 CSS tabanı (değerler ÷2) */
+  --inspector-width: clamp(360px, 23.33vw, 448px);
+}
+
+body {
+  background-color: var(--color-canvas);
+  background-image: url("/assets/brand/pattern-bg.png");
+  background-size: 1920px 1080px;
+  background-repeat: repeat;
+  color: var(--color-ink);
+  font-family: var(--font-ui);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
