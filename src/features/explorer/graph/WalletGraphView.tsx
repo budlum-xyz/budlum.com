@@ -2,20 +2,24 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  WalletInspector,
+  WalletInspectorSkeleton,
+} from "../components/WalletInspector";
 import { TokenIcon, TransferArrow } from "../components/glyphs";
 import { COPY } from "../copy";
-import { getWalletRelations } from "../queries";
+import { getWalletRelations, getWalletSummary } from "../queries";
 import { getEdgeTransfer } from "../queries/fixtures";
-import type { GraphEdge, GraphNode, WalletGraph } from "../types";
+import type { GraphEdge, GraphNode, WalletGraph, WalletSummary } from "../types";
 import { shortAddress } from "../utils/format";
 import { GraphScene } from "./GraphScene";
 import { GraphViewport } from "./GraphViewport";
 
 const ANIM_MS = 450;
 const MAX_CHILDREN = 5;
-const PARENT_SHIFT = 42; // tıklanan taşın dışa kayma mesafesi
-const CHILD_SPREAD = 2.4; // ~140° yelpaze
-const CHILD_RADIUS = 115;
+const PARENT_SHIFT = 70; // tıklanan taşın dışa kayma mesafesi
+const CHILD_SPREAD = 2.1; // ~120° yelpaze — dışa dönük, geriye taşmaz
+const CHILD_RADIUS = 175; // ferah dallanma (kullanıcı isteğiyle büyütüldü)
 
 type P = { x: number; y: number };
 
@@ -40,6 +44,10 @@ export function WalletGraphView({
   const [popover, setPopover] = useState<{ x: number; y: number; edge: GraphEdge } | null>(
     null,
   );
+  // Seçilen taşın cüzdan özeti — sağ paneli client tarafında günceller (ağaç state'i korunur)
+  const [selectedSummary, setSelectedSummary] = useState<
+    { loading: true } | { loading: false; data: WalletSummary | null } | null
+  >(null);
 
   const wrapRef = useRef<HTMLDivElement>(null);
   const posRef = useRef(pos);
@@ -91,12 +99,22 @@ export function WalletGraphView({
     requestAnimationFrame(tick);
   }, []);
 
-  /** Taşa tıklama: o cüzdanın tek-hop bağlantılarını dalın ucuna aç. */
+  /** Taşa tıklama: bilgisini sağ panele getir + tek-hop bağlantılarını dalın ucuna aç. */
   const expand = useCallback(
     async (node: GraphNode) => {
       if (!node.address || busyRef.current) return;
+      const address = node.address;
       setSelectedId(node.id);
       setPopover(null);
+      // Inspector güncellemesi — merkez zaten sayfanın kendi panelinde
+      if (address === centerId) {
+        setSelectedSummary(null);
+      } else {
+        setSelectedSummary({ loading: true });
+        getWalletSummary(address).then((data) =>
+          setSelectedSummary({ loading: false, data }),
+        );
+      }
       if (expandedRef.current.has(node.id)) return; // zaten dallanmış — sadece seç
       busyRef.current = true;
       expandedRef.current.add(node.id);
@@ -173,7 +191,14 @@ export function WalletGraphView({
 
   return (
     <div ref={wrapRef} className="absolute inset-0">
-      <GraphViewport onBlankClick={() => setPopover(null)}>
+      <GraphViewport
+        onBlankClick={() => {
+          // Boş zemin: popover'ı kapat, inspector'ı aranan cüzdana döndür
+          setPopover(null);
+          setSelectedSummary(null);
+          setSelectedId(centerId);
+        }}
+      >
         <GraphScene
           nodes={positioned}
           edges={edges}
@@ -182,6 +207,17 @@ export function WalletGraphView({
           onEdgeClick={onEdgeClick}
         />
       </GraphViewport>
+
+      {/* Seçilen taşın cüzdan paneli — sayfanın kök panelinin üstünü örter */}
+      {selectedSummary ? (
+        <aside className="absolute z-20 overflow-y-auto bg-canvas max-lg:inset-x-0 max-lg:bottom-0 max-lg:h-[55vh] max-lg:border-t max-lg:border-border-soft lg:right-[91px] lg:top-[91px] lg:h-[898px] lg:max-h-[calc(100vh-120px)] lg:w-[var(--inspector-width)]">
+          {selectedSummary.loading ? (
+            <WalletInspectorSkeleton />
+          ) : selectedSummary.data ? (
+            <WalletInspector wallet={selectedSummary.data} />
+          ) : null}
+        </aside>
+      ) : null}
 
       {/* Edge transfer popover'ı */}
       {popover && transfer ? (

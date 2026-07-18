@@ -52,6 +52,7 @@ export function GraphScene({
             {/* Görünmez geniş hitbox — 1px çizgiye tıklamayı kolaylaştırır */}
             {onEdgeClick ? (
               <line
+                data-edge
                 x1={s.x}
                 y1={s.y}
                 x2={t.x}

@@ -19,8 +19,9 @@ export function GraphViewport({
 
   const onPointerDown = useCallback(
     (e: React.PointerEvent<SVGSVGElement>) => {
-      // Sadece boş zemin sürüklenir; node'lar kendi tıklamasını yönetir
-      if ((e.target as Element).closest("[data-node]")) return;
+      // Sadece boş zemin sürüklenir; node ve edge'ler kendi tıklamasını yönetir
+      // (setPointerCapture click'i yutar — edge popover bug'ının kökü buydu)
+      if ((e.target as Element).closest("[data-node],[data-edge]")) return;
       (e.currentTarget as SVGSVGElement).setPointerCapture(e.pointerId);
       drag.current = { startX: e.clientX, startY: e.clientY, ox: transform.x, oy: transform.y, moved: false };
     },
