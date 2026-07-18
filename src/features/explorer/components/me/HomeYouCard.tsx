@@ -30,7 +30,7 @@ export function HomeYouCard() {
       <Link
         href="/accounts"
         aria-label="hesap değiştir"
-        className="ml-auto text-sage transition-opacity hover:opacity-70"
+        className="ml-auto text-sage transition-all hover:drop-shadow-[0_0_6px_#98ae89]"
       >
         <GearOutline className="size-6" />
       </Link>

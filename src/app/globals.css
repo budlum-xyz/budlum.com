@@ -85,6 +85,12 @@ body {
   }
 }
 
+/* Göz hover'ı — hücrelerin çevresinde sage hitbox çizgileri (Figma 2972:2406) */
+.eyes-grid svg:hover rect {
+  stroke: var(--sage);
+  stroke-width: 1.5;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

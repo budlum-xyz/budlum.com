@@ -54,7 +54,8 @@ export function GraphScene({
         const hovered = hoveredId === node.id;
         const selected = selectedId === node.id;
         const half = node.size / 2;
-        const boxPad = 6;
+        // Hitbox en az 44x44 CSS px (a11y, koyu spec §16)
+        const boxPad = Math.max(6, (44 - node.size) / 2);
         const interactive = Boolean(onNodeClick) && !selected;
         return (
           <g

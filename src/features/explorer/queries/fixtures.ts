@@ -1,4 +1,5 @@
 import type {
+  AppCategory,
   GraphNode,
   TransactionRow,
   WalletGraph,

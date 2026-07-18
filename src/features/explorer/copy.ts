@@ -37,6 +37,20 @@ export const COPY = {
     error: "bir şeyler ters gitti",
     retry: "tekrar dene",
   },
+  market: {
+    title: "Market",
+    allApps: "Tüm uygulamaları aç",
+    columns: {
+      token: "Token",
+      symbol: "Symbol",
+      price: "Price",
+      marketCap: "Market cap (F.D)",
+      holders: "Holders",
+      lastWeek: "last week",
+      lastYear: "last year",
+      address: "adress", // Figma'daki yazımla — tasarımcı düzeltirse copy'den değişir
+    },
+  },
   wallet: {
     haveWallet: "zaten bir cüzdanım var",
     securityTitle: "tohum tümceciğin tek kurtarma anahtarındır",
