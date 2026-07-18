@@ -202,14 +202,26 @@ export function buildTokenDistribution(tokenId: string): WalletGraph {
       visualVariant: i === 5 ? "star" : "stone",
       stoneIndex: pickStone(rand()),
     });
-    // Anlamlı eşik üstü edge'ler: küçük zincirler (Figma'daki siyah node çiftleri)
-    if (i > 0 && rand() < 0.18) {
-      edges.push({
-        id: `d${i}`,
-        source: nodes[Math.floor(rand() * (i - 1))].id,
-        target: address,
-        relation: "distribution" as const,
-      });
+    // Anlamlı eşik üstü edge'ler: KISA komşu zincirleri (Figma'daki siyah node çiftleri)
+    if (i > 0 && rand() < 0.22) {
+      const me = nodes[nodes.length - 1];
+      let nearest: (typeof nodes)[number] | null = null;
+      let best = Infinity;
+      for (const other of nodes.slice(0, -1)) {
+        const d = (other.x - me.x) ** 2 + (other.y - me.y) ** 2;
+        if (d < best) {
+          best = d;
+          nearest = other;
+        }
+      }
+      if (nearest && best < 120 ** 2) {
+        edges.push({
+          id: `d${i}`,
+          source: nearest.id,
+          target: address,
+          relation: "distribution" as const,
+        });
+      }
     }
   }
   return { nodes, edges };

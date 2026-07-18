@@ -7,16 +7,22 @@ import { useCallback, useRef, useState, type ReactNode } from "react";
  * Sürükleme ile pan, tekerlek ile zoom (0.4x–3x). Renderer arayüzü SVG;
  * ileride Canvas/WebGL'e geçilebilsin diye sahne çocuk olarak verilir.
  */
-export function GraphViewport({ children }: { children: ReactNode }) {
+export function GraphViewport({
+  children,
+  onBlankClick,
+}: {
+  children: ReactNode;
+  onBlankClick?: () => void;
+}) {
   const [transform, setTransform] = useState({ x: 0, y: 0, k: 1 });
-  const drag = useRef<{ startX: number; startY: number; ox: number; oy: number } | null>(null);
+  const drag = useRef<{ startX: number; startY: number; ox: number; oy: number; moved: boolean } | null>(null);
 
   const onPointerDown = useCallback(
     (e: React.PointerEvent<SVGSVGElement>) => {
       // Sadece boş zemin sürüklenir; node'lar kendi tıklamasını yönetir
       if ((e.target as Element).closest("[data-node]")) return;
       (e.currentTarget as SVGSVGElement).setPointerCapture(e.pointerId);
-      drag.current = { startX: e.clientX, startY: e.clientY, ox: transform.x, oy: transform.y };
+      drag.current = { startX: e.clientX, startY: e.clientY, ox: transform.x, oy: transform.y, moved: false };
     },
     [transform],
   );
@@ -24,12 +30,17 @@ export function GraphViewport({ children }: { children: ReactNode }) {
   const onPointerMove = useCallback((e: React.PointerEvent) => {
     if (!drag.current) return;
     const { startX, startY, ox, oy } = drag.current;
+    if (Math.abs(e.clientX - startX) + Math.abs(e.clientY - startY) > 4) {
+      drag.current.moved = true;
+    }
     setTransform((t) => ({ ...t, x: ox + e.clientX - startX, y: oy + e.clientY - startY }));
   }, []);
 
   const endDrag = useCallback(() => {
+    // Sürüklemeden bırakıldıysa boş zemin tıklaması say → seçimi temizle
+    if (drag.current && !drag.current.moved) onBlankClick?.();
     drag.current = null;
-  }, []);
+  }, [onBlankClick]);
 
   const onWheel = useCallback((e: React.WheelEvent) => {
     setTransform((t) => {

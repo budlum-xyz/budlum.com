@@ -10,18 +10,21 @@ export function ExplorerShell({
   children,
   inspector,
   initialQuery,
+  hideNav = false,
 }: {
   children: ReactNode;
   inspector?: ReactNode;
   initialQuery?: string;
+  hideNav?: boolean;
 }) {
   return (
     <div className="relative h-screen overflow-hidden">
       <BrandHeader initialQuery={initialQuery} />
-      <ExplorerNav />
+      {hideNav ? null : <ExplorerNav />}
       {children}
       {inspector ? (
-        <aside className="absolute right-[91px] top-[91px] z-10 h-[898px] max-h-[calc(100vh-120px)] w-[var(--inspector-width)] overflow-y-auto bg-canvas">
+        // ≥1024: sağ sütun (1024-1599'da canvas üstünde overlay); <1024: bottom sheet (spec §13)
+        <aside className="absolute z-10 overflow-y-auto bg-canvas max-lg:inset-x-0 max-lg:bottom-0 max-lg:h-[55vh] max-lg:border-t max-lg:border-border-soft lg:right-[91px] lg:top-[91px] lg:h-[898px] lg:max-h-[calc(100vh-120px)] lg:w-[var(--inspector-width)]">
           {inspector}
         </aside>
       ) : null}
