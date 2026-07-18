@@ -115,6 +115,10 @@ export const WALLETS: Record<string, WalletSummary> = {
   },
 };
 
+/** Diskte var olan taş asset indeksleri (daş 9 Figma'da yok). */
+const STONE_INDICES = [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14];
+const pickStone = (r: number) => STONE_INDICES[Math.floor(r * STONE_INDICES.length)];
+
 /** Deterministik PRNG — layout her render'da aynı kalsın (kabul kriteri). */
 function mulberry32(seed: number) {
   return function () {
@@ -136,7 +140,7 @@ export function buildWalletGraph(address: string): WalletGraph {
       address,
       x: 0,
       y: 0,
-      size: 56,
+      size: 100,
       visualVariant: "star",
     },
   ];
@@ -155,9 +159,9 @@ export function buildWalletGraph(address: string): WalletGraph {
       address: target,
       x: Math.cos(angle) * r,
       y: Math.sin(angle) * r * 0.75,
-      size: 34 + rand() * 30,
+      size: 52 + rand() * 38,
       visualVariant: "stone",
-      stoneIndex: 1 + Math.floor(rand() * 13),
+      stoneIndex: pickStone(rand()),
     });
     edges.push({
       id: `e${i}`,
@@ -194,9 +198,9 @@ export function buildTokenDistribution(tokenId: string): WalletGraph {
       sharePct,
       x: Math.cos(angle) * r,
       y: Math.sin(angle) * r * 0.8,
-      size: 18 + Math.sqrt(sharePct) * 22, // sqrt scale — whale ekranı yutmasın
+      size: 22 + Math.sqrt(sharePct) * 24, // sqrt scale — whale ekranı yutmasın
       visualVariant: i === 5 ? "star" : "stone",
-      stoneIndex: 1 + Math.floor(rand() * 13),
+      stoneIndex: pickStone(rand()),
     });
     // Anlamlı eşik üstü edge'ler: küçük zincirler (Figma'daki siyah node çiftleri)
     if (i > 0 && rand() < 0.18) {
