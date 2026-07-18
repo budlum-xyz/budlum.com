@@ -7,9 +7,12 @@ import { FlowerMark, PixelFigure, Sparkle } from "../glyphs";
 export function MeCanvas() {
   return (
     <>
-      <div className="absolute left-[48.5%] top-[38%]">
-        <span className="flex size-6 items-center justify-center bg-ink text-canvas">
-          <FlowerMark className="size-5" />
+      <div
+        className="map-marker absolute"
+        style={{ "--mx": "48.5%", "--my": "38%" } as React.CSSProperties}
+      >
+        <span className="flex size-[30px] items-center justify-center bg-ink text-canvas">
+          <FlowerMark className="size-6" />
         </span>
       </div>
 

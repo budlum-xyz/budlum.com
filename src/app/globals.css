@@ -72,8 +72,20 @@ body {
   box-shadow: 0 0 0 2px var(--canvas), 0 0 0 4px var(--sage);
 }
 
-/* Piksel gözler: merkeze yakın AMA arka plan karo gridine (30px) tam oturan konum.
-   Desen viewport (0,0)'dan döşendiği için 30'un katı her konum karo sınırıdır. */
+/* Harita işaretleri: --mx/--my istenen kaba konum; round() en yakın 30px karo
+   sınırına oturtur. Desen viewport (0,0)'dan döşendiği için 30'un katı = karo çizgisi. */
+.map-marker {
+  left: var(--mx);
+  top: var(--my);
+}
+@supports (left: round(nearest, 1px, 2px)) {
+  .map-marker {
+    left: round(nearest, var(--mx), 30px);
+    top: round(nearest, var(--my), 30px);
+  }
+}
+
+/* Piksel gözler — aynı karo hizalama kuralı */
 .eyes-grid {
   left: calc(50% - 210px);
   top: calc(50% - 120px);

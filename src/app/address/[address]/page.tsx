@@ -33,14 +33,14 @@ export default async function AddressPage({
           <WalletGraphView graph={graph} centerId={address} />
         ) : (
           <>
-            {/* Minimal merkez görünümü — küçük düğüm + yakın ilişki işaretleri */}
-            <div className="absolute left-[43%] top-[37%]">
-              <span className="flex size-6 items-center justify-center bg-ink text-canvas">
-                <FlowerMark className="size-5" />
+            {/* Minimal merkez görünümü — işaretler 1 karo (30px) boyutunda ve grid'e hizalı */}
+            <div className="map-marker absolute" style={{ "--mx": "43%", "--my": "37%" } as React.CSSProperties}>
+              <span className="flex size-[30px] items-center justify-center bg-ink text-canvas">
+                <FlowerMark className="size-6" />
               </span>
             </div>
-            <div className="absolute left-[45.4%] top-[42.5%]">
-              <span className="flex size-8 items-center justify-center border border-border-soft bg-surface text-sage">
+            <div className="map-marker absolute" style={{ "--mx": "45.4%", "--my": "42.5%" } as React.CSSProperties}>
+              <span className="flex size-[30px] items-center justify-center border border-border-soft bg-surface text-sage">
                 <Sparkle className="size-4" />
               </span>
             </div>

@@ -15,8 +15,9 @@ export function AccountSwitcher({ activeId }: { activeId: string }) {
   return (
     <div className="flex flex-col gap-4 p-8">
       <AccountRow account={active} active />
+      {/* Tam onboarding akışına gider: parsel seç → oluştur ya da içe aktar */}
       <Link
-        href="/accounts/new"
+        href="/wallet"
         className="w-fit self-start border border-border px-5 py-1 text-base hover:bg-surface"
       >
         {COPY.me.addAccount}
