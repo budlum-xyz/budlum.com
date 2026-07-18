@@ -57,15 +57,6 @@ body {
   font-family: var(--font-ui);
 }
 
-/* Tema zorlamalı yüzey — /wallet* onboarding'i toggle'dan bağımsız koyu açılır */
-.themed-surface {
-  background-color: var(--canvas);
-  background-image: var(--pattern-image);
-  background-size: 1920px 1080px;
-  background-repeat: repeat;
-  color: var(--ink);
-}
-
 /* Klavye odağı — koyu/açık her zeminde görünür halka (spec §13 focus-ring) */
 :focus-visible {
   outline: none;
