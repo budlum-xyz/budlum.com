@@ -49,6 +49,49 @@ export function TransferArrow({ className }: { className?: string }) {
   );
 }
 
+/**
+ * Piksel göz — ana ekran maskotu (Figma 2856:4578): bitişik kare hücrelerden
+ * oktagon halka + merkez nokta.
+ */
+export function PixelEye({ className }: { className?: string }) {
+  const cells: Array<[number, number]> = [
+    [1, 0], [2, 0], [3, 0],
+    [0, 1], [4, 1],
+    [0, 2], [2, 2], [4, 2],
+    [0, 3], [4, 3],
+    [1, 4], [2, 4], [3, 4],
+  ];
+  return (
+    <svg viewBox="0 0 150 150" className={className} aria-hidden>
+      {cells.map(([c, r]) => (
+        <rect key={`${c}-${r}`} x={c * 30} y={r * 30} width={30} height={30} fill="currentColor" />
+      ))}
+    </svg>
+  );
+}
+
+/**
+ * Parıltı kontrolü — içi dolu 4 köşeli yıldız + sağa uzanan çentikli çizgi
+ * (Figma ana ekran ve wallet-summary alt-orta butonu).
+ */
+export function SparkleLine({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 128 40" className={className} aria-hidden>
+      <path
+        d="M18 2C20 12 26 18 34 20C26 22 20 28 18 38C16 28 10 22 2 20C10 18 16 12 18 2Z"
+        fill="currentColor"
+      />
+      <path
+        d="M34 20H84C88 20 88 26 92 26C96 26 96 20 100 20H124"
+        stroke="currentColor"
+        strokeWidth="3"
+        fill="none"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 /** Piksel insan figürü — Gamefi (Lubo vs Fiction) ikonu. */
 export function PixelFigure({ className }: { className?: string }) {
   return (

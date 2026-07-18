@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ExplorerShell } from "@/features/explorer/components/ExplorerShell";
 import { WalletInspector } from "@/features/explorer/components/WalletInspector";
-import { FlowerMark, Sparkle } from "@/features/explorer/components/glyphs";
+import { FlowerMark, Sparkle, SparkleLine } from "@/features/explorer/components/glyphs";
 import { WalletGraphView } from "@/features/explorer/graph/WalletGraphView";
 import { getWalletRelations, getWalletSummary } from "@/features/explorer/queries";
 
@@ -56,19 +56,19 @@ export default async function AddressPage({
           }
           aria-label={graphOpen ? "grafiği kapat" : "grafiği aç"}
           aria-expanded={graphOpen}
-          className="absolute bottom-[7%] left-1/2 -translate-x-1/2 transition-opacity hover:opacity-70"
+          className="absolute bottom-[7%] left-1/2 -translate-x-1/2 text-ink transition-opacity hover:opacity-70"
         >
-          <Image
-            src={
-              graphOpen
-                ? "/assets/icons/parilti-kapat.png"
-                : "/assets/icons/parilti-ac.png"
-            }
-            alt=""
-            width={64}
-            height={40}
-            className="h-10 w-auto"
-          />
+          {graphOpen ? (
+            <Image
+              src="/assets/icons/parilti-kapat.png"
+              alt=""
+              width={40}
+              height={40}
+              className="h-9 w-auto"
+            />
+          ) : (
+            <SparkleLine className="h-8 w-auto" />
+          )}
         </Link>
       </main>
     </ExplorerShell>

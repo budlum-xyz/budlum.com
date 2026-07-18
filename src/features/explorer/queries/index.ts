@@ -6,6 +6,7 @@ import type {
 } from "../types";
 import {
   ADDRESSES,
+  OWN_ACCOUNTS,
   TOKENS,
   WALLETS,
   buildTokenDistribution,
@@ -40,6 +41,8 @@ export async function getWalletSummary(
   await delay();
   const known = WALLETS[address];
   if (known) return known;
+  const own = OWN_ACCOUNTS.find((a) => a.address === address);
+  if (own) return own.summary;
   // Bilinmeyen adres: anonim cüzdan (avatar yok, düşük veri) — boş durum değil
   if (address.length < 8) return null;
   return {
