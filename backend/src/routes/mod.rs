@@ -2,6 +2,7 @@
 //! Hepsi `AppState`'ten `ExplorerRepository` alır; veri kaynağından bağımsız.
 
 pub mod account;
+pub mod budlum;
 pub mod market;
 pub mod root;
 pub mod search;
@@ -47,6 +48,21 @@ pub fn router(state: AppState) -> Router {
         .route(
             "/api/accounts/{id}/holdings/nfts",
             axum::routing::get(account::nft_holdings),
+        )
+        // Budlum-native pass-through (gerçek veri modeli)
+        .route(
+            "/api/wallet/{address}/context",
+            axum::routing::get(budlum::wallet_context),
+        )
+        .route(
+            "/api/market/offers",
+            axum::routing::get(budlum::market_offers),
+        )
+        .route("/api/hub/apps", axum::routing::get(budlum::hub_apps))
+        .route("/api/validators", axum::routing::get(budlum::validators))
+        .route(
+            "/api/consensus-domains",
+            axum::routing::get(budlum::consensus_domains),
         )
         .with_state(state)
 }

@@ -47,6 +47,19 @@ pub trait ExplorerRepository: Send + Sync {
     async fn own_account(&self, id: &str) -> Result<Option<OwnAccount>>;
     async fn token_holdings(&self) -> Result<Vec<TokenHoldingRow>>;
     async fn nfts(&self) -> Result<Vec<NftHoldingRow>>;
+
+    // ── Budlum veri modeli pass-through (gerçek şekli; Figma tiplerine
+    //    zorla çevrilmez — frontend Budlum-native veriyi consumes eder). ──
+    /// `bud_atlasGetWalletContext` — bakiye + Pollen dataAssets/grants.
+    async fn atlas_wallet_context(&self, address: &str) -> Result<serde_json::Value>;
+    /// `bud_marketGetOffers` — Pollen veri-pazarı teklifleri.
+    async fn market_offers(&self) -> Result<serde_json::Value>;
+    /// `bud_hubGetApps` — hub uygulamaları.
+    async fn hub_apps(&self) -> Result<serde_json::Value>;
+    /// `bud_getValidatorSet`.
+    async fn validator_set(&self) -> Result<serde_json::Value>;
+    /// `bud_getConsensusDomains`.
+    async fn consensus_domains(&self) -> Result<serde_json::Value>;
 }
 
 /// Tohum (Figma) veri ile uygulanmış repository.
@@ -214,6 +227,27 @@ impl ExplorerRepository for SeededRepository {
 
     async fn nfts(&self) -> Result<Vec<NftHoldingRow>> {
         Ok(self.nfts.clone())
+    }
+
+    // Budlum passthrough — tohum veride bu veriler yok; boş/düz metadata döner
+    // (node modunda NodeRepository gerçek veriyi verir).
+    async fn atlas_wallet_context(&self, address: &str) -> Result<serde_json::Value> {
+        Ok(serde_json::json!({
+            "address": address, "balance": "0x0", "nonce": "0x0",
+            "dataAssets": [], "accessGrants": [], "saleAuthorizations": [],
+        }))
+    }
+    async fn market_offers(&self) -> Result<serde_json::Value> {
+        Ok(serde_json::json!([]))
+    }
+    async fn hub_apps(&self) -> Result<serde_json::Value> {
+        Ok(serde_json::json!([]))
+    }
+    async fn validator_set(&self) -> Result<serde_json::Value> {
+        Ok(serde_json::json!({ "validatorAddress": "", "validatorSetHash": "" }))
+    }
+    async fn consensus_domains(&self) -> Result<serde_json::Value> {
+        Ok(serde_json::json!([]))
     }
 }
 

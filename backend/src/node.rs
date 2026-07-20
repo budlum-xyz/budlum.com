@@ -109,6 +109,51 @@ impl BudlumNodeClient {
         // Çekirdek null dönebilir — serde null → Option<String>::None.
         self.rpc("bud_bnsResolve", serde_json::json!([name])).await
     }
+
+    // ── Budlum veri modeli pass-through (gerçek şekliyle; Figma tiplerine
+    //    zorla çevrilmez — frontend gerçek Budlum verisini consumes eder). ──
+
+    /// `bud_atlasGetWalletContext` — zengin cüzdan bağlamı (bakiye, nonce,
+    /// Pollen dataAssets, accessGrants, saleAuthorizations). Explorer wallet/me
+    /// sayfaları için Budlum-native kaynak.
+    pub async fn atlas_wallet_context(&self, address: &str) -> Result<serde_json::Value> {
+        self.rpc_value("bud_atlasGetWalletContext", serde_json::json!([address]))
+            .await
+    }
+
+    /// `bud_marketGetOffers` — Pollen veri-pazarı teklifleri (DataOffer[]:
+    /// seller, cid, price $BUD, active). Market sayfası için gerçek veri.
+    pub async fn market_offers(&self) -> Result<serde_json::Value> {
+        self.rpc_value("bud_marketGetOffers", serde_json::json!([]))
+            .await
+    }
+
+    /// `bud_hubGetApps` — hub uygulamaları. recentApps / hub sayfası için.
+    pub async fn hub_apps(&self) -> Result<serde_json::Value> {
+        self.rpc_value("bud_hubGetApps", serde_json::json!([]))
+            .await
+    }
+
+    /// `bud_getValidatorSet` — {validatorAddress, validatorSetHash}.
+    pub async fn validator_set(&self) -> Result<serde_json::Value> {
+        self.rpc_value("bud_getValidatorSet", serde_json::json!([]))
+            .await
+    }
+
+    /// `bud_getStatus` zaten var; `bud_getConsensusDomains` — domain listesi.
+    pub async fn consensus_domains(&self) -> Result<serde_json::Value> {
+        self.rpc_value("bud_getConsensusDomains", serde_json::json!([]))
+            .await
+    }
+
+    /// Generic JSON-RPC — `result` alanını ham Value olarak döndürür (pass-through).
+    pub async fn rpc_value(
+        &self,
+        method: &str,
+        params: serde_json::Value,
+    ) -> Result<serde_json::Value> {
+        self.rpc::<serde_json::Value>(method, params).await
+    }
 }
 
 // ── Budlum RPC tel tipleri (çekirdek tx_to_json/block_to_json ile birebir) ──

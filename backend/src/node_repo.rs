@@ -144,6 +144,42 @@ impl ExplorerRepository for NodeRepository {
     async fn nfts(&self) -> Result<Vec<NftHoldingRow>> {
         self.fallback.nfts().await
     }
+
+    // Budlum passthrough — node gerçek veri; node erişilemezse seeded stub.
+    async fn atlas_wallet_context(&self, address: &str) -> Result<serde_json::Value> {
+        match self.node.atlas_wallet_context(address).await {
+            Ok(v) => Ok(v),
+            Err(_) => self.fallback.atlas_wallet_context(address).await,
+        }
+    }
+    async fn market_offers(&self) -> Result<serde_json::Value> {
+        Ok(self
+            .node
+            .market_offers()
+            .await
+            .unwrap_or_else(|_| serde_json::json!([])))
+    }
+    async fn hub_apps(&self) -> Result<serde_json::Value> {
+        Ok(self
+            .node
+            .hub_apps()
+            .await
+            .unwrap_or_else(|_| serde_json::json!([])))
+    }
+    async fn validator_set(&self) -> Result<serde_json::Value> {
+        Ok(self
+            .node
+            .validator_set()
+            .await
+            .unwrap_or_else(|_| serde_json::json!({"validatorAddress":"","validatorSetHash":""})))
+    }
+    async fn consensus_domains(&self) -> Result<serde_json::Value> {
+        Ok(self
+            .node
+            .consensus_domains()
+            .await
+            .unwrap_or_else(|_| serde_json::json!([])))
+    }
 }
 
 impl NodeRepository {
