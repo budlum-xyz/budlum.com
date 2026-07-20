@@ -57,12 +57,20 @@ Sağlık: `curl http://localhost:8080/api/health`
 cargo fmt && cargo clippy --all-targets -- -D warnings && cargo test
 ```
 
-## Frontend'e bağlama (sonraki adım — bu branch'te değil)
+## Frontend'e bağlama (bu branch'te yapıldı)
 
-`src/features/explorer/queries/index.ts`'teki fonksiyonlar `fetch()`
-çağrılarına çevrilir (örn. `getWalletSummary(a)` →
-`fetch(\`${API}/api/wallet/${a}/summary\`).then(r=>r.json())`).
-`next.config.ts`'e API rewrite eklenebilir (`/api/:path*` → `localhost:8080`).
+`src/features/explorer/queries/index.ts` artık Rust backend'e `fetch` ile
+bağlı (`src/features/explorer/api/client.ts`). `next.config.ts` `/api/:path*`
+rewrite'ı istemci-tarafı çağrıları backend'e proxiler. Sunucu componentleri
+`BUDLUM_API_URL` üzerinden doğrudan backend'e gider.
+
+Çalıştırma (uçtan uca):
+```bash
+# 1) backend
+cd backend && cargo run            # http://localhost:8080  (DATA_SOURCE=node + BUDLUM_RPC_URL=node:8545 => gerçek zincir)
+# 2) frontend
+cd .. && npm run dev               # http://localhost:3000
+```
 
 > Veri kaynağı şimdilik **tohum** (Figma mock'ları). Gerçek zincir verisi
 > `IndexerRepository` ile gelir; HTTP sözleşmesi değişmez.

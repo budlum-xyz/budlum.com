@@ -10,9 +10,9 @@ export function UniversalSearch({ initialQuery = "" }: { initialQuery?: string }
   const router = useRouter();
   const [query, setQuery] = useState(initialQuery);
 
-  function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const result = classifyQuery(query);
+    const result = await classifyQuery(query);
     if (!result) return;
     if (result.kind === "token") {
       router.push(`/token/${encodeURIComponent(result.tokenId)}`);

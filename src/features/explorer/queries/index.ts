@@ -4,85 +4,48 @@ import type {
   WalletGraph,
   WalletSummary,
 } from "../types";
-import {
-  ADDRESSES,
-  OWN_ACCOUNTS,
-  TOKENS,
-  WALLETS,
-  buildTokenDistribution,
-  buildTransactions,
-  buildWalletGraph,
-} from "./fixtures";
+import { api } from "../api/client";
+import { ADDRESSES } from "./fixtures";
 
 /**
- * Mock servis katmanı — gerçek zincir API'si hazır olduğunda SADECE bu dosya
- * gerçek fetch çağrılarıyla değişecek; bileşenler bu imzalara bağlı kalacak.
+ * Veri erişim katmanı — Rust backend (budlum-explorer-api) üzerinden fetch.
+ * Bileşenler bu imzalara bağlı kalır; mock dönemi kapandı.
+ *
+ * Budlum ağı için: backend, Budlum node JSON-RPC'ye bağlı explorer API'sidir
+ * (DATA_SOURCE=node -> gerçek zincir verisi: bakiye, işlem geçmişi, BNS).
+ * Sunucu tarafında doğrudan backend (BUDLUM_API_URL), istemcide next.config
+ * rewrites üzerinden aynı-köken /api.
  */
 
-const LATENCY_MS = 350;
-const delay = () => new Promise((r) => setTimeout(r, LATENCY_MS));
-
-/** Arama sınıflandırması (spec §2): token adı → token; aksi halde cüzdan. */
-export function classifyQuery(q: string): SearchResult {
-  const query = q.trim();
-  if (!query) return null;
-  const token = TOKENS[query.toLowerCase()];
-  if (token) return { kind: "token", tokenId: token.id };
-  const byName = Object.values(WALLETS).find(
-    (w) => w.displayName?.toLowerCase() === query.toLowerCase(),
-  );
-  if (byName) return { kind: "wallet", address: byName.address };
-  return { kind: "wallet", address: query };
+/** Arama sınıflandırması — backend /api/search (Budlum BNS .bud çözümleme dahil). */
+export async function classifyQuery(q: string): Promise<SearchResult> {
+  return (await api.search(q)) ?? null;
 }
 
 export async function getWalletSummary(
   address: string,
 ): Promise<WalletSummary | null> {
-  await delay();
-  const known = WALLETS[address];
-  if (known) return known;
-  const own = OWN_ACCOUNTS.find((a) => a.address === address);
-  if (own) return own.summary;
-  // Bilinmeyen adres: anonim cüzdan (avatar yok, düşük veri) — boş durum değil
-  if (address.length < 8) return null;
-  return {
-    address,
-    primaryBalance: { amount: "0M", symbol: "LUM", variant: "sage" },
-    tokenCount: 0,
-    tokenTotal: { amount: "0M", symbol: "LUM" },
-    nftCount: 0,
-    recentTransfers: [],
-    recentApps: [],
-  };
+  return api.walletSummary(address);
 }
 
-export async function getWalletRelations(address: string): Promise<WalletGraph> {
-  await delay();
-  return buildWalletGraph(address);
+export async function getWalletRelations(
+  address: string,
+): Promise<WalletGraph> {
+  return api.walletRelations(address);
 }
 
-export async function getTokenDistribution(tokenId: string): Promise<WalletGraph> {
-  await delay();
-  return buildTokenDistribution(tokenId);
+export async function getTokenDistribution(
+  tokenId: string,
+): Promise<WalletGraph> {
+  return api.tokenDistribution(tokenId);
 }
-
-const ALL_TX = buildTransactions();
-const PAGE_SIZE = 13;
 
 export async function getTransactions(opts: {
   address?: string;
   counterparty?: string;
   page?: number;
 }): Promise<TransactionPage> {
-  await delay();
-  const page = Math.max(0, opts.page ?? 0);
-  const start = page * PAGE_SIZE;
-  return {
-    items: ALL_TX.slice(start, start + PAGE_SIZE),
-    block: "456789",
-    totalPages: Math.ceil(ALL_TX.length / PAGE_SIZE),
-    page,
-  };
+  return api.transactions(opts);
 }
 
 export { ADDRESSES };
