@@ -27,7 +27,7 @@ pub struct TxFilter {
     pub page: Option<u32>,
 }
 
-const PAGE_SIZE: usize = 13;
+pub const PAGE_SIZE: usize = 13;
 
 /// Explorer veri kaynağı. Tüm async metotlar object-safe (async_trait).
 #[async_trait]
